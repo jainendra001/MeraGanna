@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Jaisa Ho Mood Waisa Ho Ganna</title>
+
+  <style>
+    img {
+      padding: 20px;
+      display: inline-block;
+      margin: auto;
+      width: 85%;
+    }
+  </style>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous" />
+  <link href="https://fonts.googleapis.com/css2?family=Bigelow+Rules&display=swap" rel="stylesheet">
+  <link type="text/css" href="{{ url_for('static', filename='/css/style.css') }}" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+    crossorigin="anonymous"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Roboto Mono', monospace;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      background: url('https://images.pexels.com/photos/3552948/pexels-photo-3552948.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      opacity: 1.0; /* Adjust the opacity value as needed */
+    }
+
+    .navbar {
+      background-color: #1D5D9B;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: white;
+      opacity: 1.0;
+    }
+
+    .navbar-logo {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .navbar-button {
+      background-color: #75C2F6;
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+    }
+
+    .navbar-button:hover {
+      background-color: #66A9E6;
+    }
+
+    #body {
+      text-align: center;
+      margin-top: 50px;
+      position: relative;
+    }
+
+    h1 {
+      font-size: 48px;
+      color: #0ccac4;
+      margin-bottom: 20px;
+    }
+
+    h2 {
+      font-size: 32px;
+      color: #0ccac4;
+      margin-bottom: 0;
+      vertical-align: text-bottom;
+    }
+
+    .content-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 30px;
+    }
+
+    .emotion-detector {
+      width: 250px;
+      height: 250px;
+      border-radius: 50%;
+      background-color: white;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      position: absolute;
+      top: 50px;
+      right: 20px;
+    }
+
+    .emotion-detector h2 {
+      top: 100px;
+      margin-top: 10;
+      height: 100%;
+      position: absolute;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+    }
+
+    .emotion-detector img {
+      top: 50px;
+      width: 250px;
+      height: 250px;
+      border-radius: 50%;
+    }
+
+    .song-recommendations {
+      width: 70%;
+      padding: 20px;
+      background-color: white;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      position: absolute;
+      top: 150px;
+      height: 750px;
+      left: 100px;
+      z-index: 1;
+    }
+
+    .result-area {
+      padding: 35px;
+      background-color: #ffffff;
+      border-radius: 25px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      width: 80%;
+      height: 600px;
+      left: 120px;
+      margin-top: 50px;
+      text-align: center;
+      position: relative;
+      z-index: 2;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="navbar">
+    <div class="navbar-logo">MeraGanna</div>
+    <a href="https://www.spotify.com" class="navbar-button">Go to Spotify</a>
+  </div>
+
+  <div id="body">
+    <h1>Mood Song Recommendations</h1>
+
+    <div class="content-container">
+      <div class="emotion-detector">
+        <div>
+          <img src="{{ url_for('video_feed') }}" alt="Emotion Detector Image">
+        </div>
+        <h2>Mood Detector</h2>
+      </div>
+
+      <div class="song-recommendations">
+        <h2>Song Recommendations</h2>
+        <div class="result-area outer-shadow" id="ResultArea"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script type=text/javascript>
+    // Constantly Update Table
+    setInterval(function() {
+      $.getJSON('/t', function(data) {
+        CreateHtmlTable(data);
+        console.log(data, "DATA");
+      });
+      return false;
+    }, 100);
+
+    function CreateHtmlTable(data) {
+      //Clear result div
+      $("#ResultArea").html("");
+      //Crate table html tag
+      var table = $("<table class = 'table table-striped table-light table-bordered table-hover table-sm table-responsive' id=DynamicTable></table>").appendTo("#ResultArea");
+      //Create table header row
+      var rowHeader = $("<tr></tr>").appendTo(table);
+      $("<td></td>").text("Name").appendTo(rowHeader);
+      $("<td></td>").text("Album").appendTo(rowHeader);
+      $("<td></td>").text("Artist").appendTo(rowHeader)
+      //Get JSON data by calling action method in controller
+      $.each(data, function(i, value) {
+
+        //Create new row for each record
+        var row = $("<tr></tr>").appendTo(table);
+        $("<td></td>").text(value.Name).appendTo(row);
+        $("<td></td>").text(value.Album).appendTo(row);
+        $("<td></td>").text(value.Artist).appendTo(row);
+      });
+    }
+  </script>
+
+</body>
+
+</html>
